@@ -46,6 +46,21 @@ For example:
       });
     }, false);
 
+## Keyboard
+
+Any key pressed will hold a true value whilst down with the keycode (via `event.which`):
+
+For example:
+
+    if (track.key[27]) {
+      // user is holding the escape key
+    }
+
+## Serialisation
+
+Nothing special, just outputs to JSON:
+
+* `track.toString()` or `track+''` - to get the JSON respresentation of the object
 
 # License
 
