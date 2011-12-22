@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta id="meta" name="viewport" content="width=device-width, user-scalable=no, initial-scale=0.5">
+<meta charset=utf-8>
+<title>Demo of track.js</title>
+<style>
+* {
+  -webkit-touch-callout: none; /* prevent callout to copy image, etc when tap to hold */
+  -webkit-text-size-adjust: none; /* prevent webkit from resizing text to fit */
+/* make transparent link selection, adjust last value opacity 0 to 1.0 */
+  -webkit-tap-highlight-color: rgba(0,0,0,0); 
+/*  -webkit-user-select: none; /* prevent copy paste, to allow, change 'none' to 'text' */
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  font-family: monospace;
+  margin: 0;
+  padding: 0;
+  background: #000;
+  overflow: hidden;
+}
+
+canvas { position: absolute; z-index: 0; }
+label { color: #fff; padding: 10px;  }
+#controls { position: absolute; z-index: 2; }
+
+</style>
+</head>
+<body>
+<canvas id=o></canvas>
+<canvas id=debug></canvas>
+  <div id=controls>
+    <input type=number value=1500 step=100 id=weight min=0>
+    <label for=weight>Weight of object (low value == heavy)</label>
+  </div>
+<script src="track.js"></script>
+<script>
+var ctx = document.getElementById('debug').getContext('2d'),
+    anim = document.getElementById('o').getContext('2d'),
+    animTimer = null,
+    down = false,
+    track = new Track(ctx.canvas); // NOTE: linking the track to the canvas so drawing is relative to that.
+
+track.weight = 1500;
+
+document.getElementById('weight').oninput = function () {
+  track.weight = this.value;
+}
+
+var height = ctx.canvas.height = anim.canvas.height = window.innerHeight,
+    width = ctx.canvas.width = anim.canvas.width = window.innerWidth;
+
+function dot(c, r, x, y, ctx) {
+  if (ctx === undefined) ctx = window.ctx;
+  if (y === undefined) y = track.y;
+  if (x === undefined) x = track.x
+
+  if (c === undefined) c = 'red';
+  if (r === undefined) r = 44;
+
+  ctx.save();
+  ctx.fillStyle = c;
+  ctx.beginPath();
+  ctx.arc(x, y, r, 0, Math.PI * 2, true);
+  ctx.closePath();
+  ctx.fill();
+  ctx.restore();
+}
+
+document.addEventListener(track.events.down, function (e) {
+  console.log(e.target.nodeName);
+  if (e.target.nodeName !== 'CANVAS') return;
+  ctx.clearRect(0, 0, width, height);
+  clearInterval(animTimer);
+  anim.clearRect(0, 0, width, height);
+  down = true;
+  dot('red', 30, track.downX, track.downY);
+}, false);
+
+document.addEventListener(track.events.up, function () {
+  if (down) {
+    dot('#0c0', 22);
+    ctx.strokeStyle = 'red';
+    ctx.beginPath();
+    ctx.moveTo(track.upX + 0.5, track.upY + 0.5);
+    ctx.lineTo(track.x - track.momentumX + 0.5, track.y - track.momentumY + 0.5);
+    ctx.stroke();
+    ctx.closePath();
+
+    // animate the movement
+    clearInterval(animTimer);
+    var last = { x: track.downX, y: track.downY },
+        target = { x: track.x - track.momentumX, y: track.y - track.momentumY };
+    
+    dot('gold', 44, last.x, last.y, anim);
+    animTimer = setInterval(function () {
+      anim.fillStyle = 'rgba(0,0,0,0.1)';
+      anim.fillRect(0,0,width, height);
+
+      var dX = (target.x - last.x) * 0.2,
+          dY = (target.y - last.y) * 0.2;
+
+      last.x += dX;
+      last.y += dY;
+      dot('gold', 44, last.x, last.y, anim);
+      if (Math.abs(dX) < 0.0001 && Math.abs(dY) < 0.0001) {
+        clearInterval(animTimer);
+      }
+    }, 1000 / 60);
+
+    down = false;
+  }
+}, false);
+
+document.addEventListener(track.events.move, function (e) {
+  e.preventDefault();
+}, false);
+
+</script>
+</body>
+</html>
+
