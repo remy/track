@@ -31,7 +31,6 @@ function Track(context) {
     };
   };
 
-  // TODO test the context position offset actually works
   function getXY(event) {
     event = event.pageX ? event : event.touches.length ? event.touches[0] : { pageX: 0, pageY: 0 };
     return {
