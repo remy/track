@@ -2,7 +2,8 @@
 
 ## Track the entire document
 
-```var track = new Track();
+```javascript
+var track = new Track();
 document.addEventListener(track.up, function () {
   alert('You held down for ' + track.duration + 'ms');
 }, false);
@@ -39,13 +40,15 @@ There are three connivence strings that allow you to easily bind to the right ev
 
 For example:
 
-    var track = new Track();
-    document.addEventListener(track.events.up, function () {
-      animate({
-        start: [track.downX, track.downY],
-        end: [track.x - track.momentumX, track.y - track.momentumY]
-      });
-    }, false);
+```javascript
+var track = new Track();
+document.addEventListener(track.events.up, function () {
+  animate({
+    start: [track.downX, track.downY],
+    end: [track.x - track.momentumX, track.y - track.momentumY]
+  });
+}, false);
+```
 
 ## Keyboard
 
@@ -53,9 +56,11 @@ Any key pressed will hold a true value whilst down with the keycode (via `event.
 
 For example:
 
-    if (track.key[27]) {
-      // user is holding the escape key
-    }
+```javascript
+if (track.key[27]) {
+  // user is holding the escape key
+}
+```
 
 ## Serialisation
 
