@@ -2,10 +2,11 @@
 
 ## Track the entire document
 
-``var track = new Track();
+```var track = new Track();
 document.addEventListener(track.up, function () {
   alert('You held down for ' + track.duration + 'ms');
-}, false);``
+}, false);
+```
 
 # API
 
